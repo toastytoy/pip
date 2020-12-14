@@ -1,0 +1,18 @@
+- hosts: all
+  tasks:
+
+    # TODO(ianw) : let's see if this is interferring
+    # with some of the pip tox runs
+    - name: Remove OpenDev mirror config
+      file:
+        path: /etc/pip.conf
+        state: absent
+      become: yes
+
+    - name: Run tox testing
+      include_role:
+        name: tox
+      vars:
+        tox_extra_args: "-- --html={{ zuul_output_dir }}/logs/test-results.html --self-contained-html --verbose -n auto --use-venv"
+        tox_environment:
+          CI: true
